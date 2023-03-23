@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Post Application</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    .postImgs {
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .postImgs>img {
+      width: 250px;
+      height: 250px;
+    }
+
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <%- include('./../common/header.ejs') -%>
+
+  <!-- Main Section -->
+  <div class="container mt-5">
+    <h1>All Posts</h1>
+    <hr>
+    <div class="posts">
+      <% if(posts.length==0){ %>
+      <div class="card" style="width: 100%;">
+        <h1 class="text-center">No Post Found...</h1>
+      </div>
+      <%}else{%>
+      <%posts.forEach((post,postIdx)=>{%>
+      <div class="card" style="width: 100%;">
+        <div class="postImgs">
+          <% post.media.forEach(e=>{ %>
+          <img src="./upload/<%=e%>" alt="post Image">
+          <%})%>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">
+            <%= post.title %>
+          </h5>
+          <p class="card-text">
+            <%= post.content %>
+          </p>
+          <button onclick="editPost('<%=post.id%>')">Edit Post</button>
+          <button onclick="removePost('<%=post.id%>','<%=userId%>',this)">Delete Post</button>
+          <% post.comment=post.comment.filter(e=>!e.isDeleted) %>
+          <% if(post.comment.length==0){ %>
+          <div class="card p-1 mb-2">
+            <h5 class="text-center">No comment Found...</h5>
+          </div>
+          <%}else{%>
+          <% post.comment.forEach((comment,idx)=>{ %>
+          <div class="card p-1 mb-2">
+            <div class="row">
+              <div class="col-md-10">
+                <p>Username :- <span class="comment-username">
+                    <%= comment.auther.username%>
+                  </span></p>
+                <p>Email :- <span class="comment-email"><%=comment.auther.email%></span></p>
+                <p>Content :- <span class="comment-content"><%=comment.content%></span></p>
+              </div>
+              <div class="col-md-2">
+                <div style="display: block;">
+                  <button class="deleteComment" onclick="deleteComment('<%=post.id%>','<%=userId%>','<%=comment.id%>',this)">Delete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <%})%>
+          <%}%>
+                
+                </div>
+              </div>
+              <%})%>
+          <%}%>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <%- include('./../common/footer') -%>
+          <script>
+            function cancelComment() {
+              location.reload()
+            }
+
+            function deleteComment(postId, userId, commentId, btn) {
+              btn.disabled = true;
+              fetch("http://localhost:3000/comment", {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    userId,
+                    postId,
+                    commentId
+                  })
+                })
+                .then(e => e.json())
+                .then(data => {
+                  if (data.status == 'fail') {
+                    alert(data.error);
+                    location.reload()
+                  } else {
+                    alert("Comment Deleted...");
+                    location.reload()
+                  }
+                })
+                .catch(e => {
+                  alert(e.message);
+                  location.reload()
+                })
+            }
+
+            function removePost(postId, userId, btn) {
+              btn.disabled = true;
+              fetch("http://localhost:3000/post", {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    userId,
+                    postId
+                  })
+                })
+                .then(e => e.json())
+                .then(data => {
+                  if (data.status == 'fail') {
+                    alert(data.error);
+                    location.reload()
+                  } else {
+                    alert("Post Deleted...");
+                    location.reload()
+                  }
+                })
+                .catch(e => {
+                  alert(e.message);
+                  location.reload()
+                })
+            }
+
+            function editPost(postId) {
+                window.location.href = `/editPost/${postId}`
+            }
+          </script>
+</body>
+
+</html>

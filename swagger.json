@@ -1,0 +1,481 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Node Post App Project",
+        "description": "Node.js and Express.js Application API"
+    },
+    "tags": [
+        {
+            "name": "user"
+        },
+        {
+            "name": "comment"
+        },
+        {
+            "name": "post"
+        }
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/profile": {
+            "patch": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "update Profile",
+                "parameters": [
+                    {
+                        "name": "profile",
+                        "in": "body",
+                        "description": "Update Profile",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "userId",
+                                "username",
+                                "email"
+                            ],
+                            "properties": {
+                                "userId": {
+                                    "type": "string",
+                                    "length": "24"
+                                },
+                                "username": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                }
+                            },
+                            "example": {
+                                "userId": "64183094ab4b390681e2b2b7",
+                                "username": "John Doe",
+                                "email": "example@gmail.com"
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "For Sucessfull Profile Updated...",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "Indicates the status of the operation.",
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "If Any Error Found...",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "Indicates the status of the operation.",
+                                            "enum": [
+                                                "fail"
+                                            ]
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Error merssage of the error"
+                                        }
+                                    },
+                                    "example": {
+                                        "status": "fail",
+                                        "error": "Invalid Email"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/comment": {
+            "post": {
+                "tags": [
+                    "comment"
+                ],
+                "summary": "Creating Commnet",
+                "parameters": [
+                    {
+                        "name": "comment",
+                        "in": "body",
+                        "description": "Create new Comment",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "userId",
+                                "content",
+                                "postId"
+                            ],
+                            "properties": {
+                                "userId": {
+                                    "type": "string"
+                                },
+                                "content": {
+                                    "type": "string"
+                                },
+                                "postId": {
+                                    "type": "string"
+                                }
+                            },
+                            "example": {
+                                "userId": "64183094ab4b390681e2b2b7",
+                                "content": "Comet Conetent 1",
+                                "postId": "64183094ab4b390681e2b2b7"
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "For Sucessfull Comment Added...",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "Indicates the status of the operation.",
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "If Any Error Found...",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "Indicates the status of the operation.",
+                                            "enum": [
+                                                "fail"
+                                            ]
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Error merssage of the error"
+                                        }
+                                    },
+                                    "example": {
+                                        "status": "fail",
+                                        "error": "Invalid Email"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "comment"
+                ],
+                "summary": "Updateing Commnet",
+                "parameters": [
+                    {
+                        "name": "comment",
+                        "in": "body",
+                        "description": "Update Comment",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "userId",
+                                "content",
+                                "postId",
+                                "commentId"
+                            ],
+                            "properties": {
+                                "userId": {
+                                    "type": "string",
+                                    "length": "24"
+                                },
+                                "content": {
+                                    "type": "string"
+                                },
+                                "postId": {
+                                    "type": "string",
+                                    "length": "24"
+                                },
+                                "commentId": {
+                                    "type": "string",
+                                    "length": "24"
+                                }
+                            },
+                            "example": {
+                                "userId": "64183094ab4b390681e2b2b7",
+                                "content": "Updated Comment",
+                                "postId": "64183094ab4b390681e2b2b7",
+                                "commentId": "64183094ab4b390681e2b2b7"
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "For Sucessfull Comment Update...",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "Indicates the status of the operation.",
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "If Any Error Found...",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "Indicates the status of the operation.",
+                                            "enum": [
+                                                "fail"
+                                            ]
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Error merssage of the error"
+                                        }
+                                    },
+                                    "example": {
+                                        "status": "fail",
+                                        "error": "Invalid Post Id"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "comment"
+                ],
+                "summary": "Delete Commnet",
+                "parameters": [
+                    {
+                        "name": "comment",
+                        "in": "body",
+                        "description": "Delete Comment",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "userId",
+                                "postId",
+                                "commentId"
+                            ],
+                            "properties": {
+                                "userId": {
+                                    "type": "string",
+                                    "length": "24"
+                                },
+                                "postId": {
+                                    "type": "string",
+                                    "length": "24"
+                                },
+                                "commentId": {
+                                    "type": "string",
+                                    "length": "24"
+                                }
+                            },
+                            "example": {
+                                "userId": "64183094ab4b390681e2b2b7",
+                                "postId": "64183094ab4b390681e2b2b7",
+                                "commentId": "64183094ab4b390681e2b2b7"
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "For Sucessfull Comment Delete...",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "Indicates the status of the operation.",
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "If Any Error Found...",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "Indicates the status of the operation.",
+                                            "enum": [
+                                                "fail"
+                                            ]
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Error merssage of the error"
+                                        }
+                                    },
+                                    "example": {
+                                        "status": "fail",
+                                        "error": "Invalid UserId"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/postImg": {
+            "delete": {
+                "tags": [
+                    "post"
+                ],
+                "summary": "Removing Post Image",
+                "parameters": [
+                    {
+                        "name": "post",
+                        "in": "body",
+                        "description": "Delete Image in Post",
+                        "schema": {
+                            "type": "object",
+                            "required": [
+                                "imgPath",
+                                "postId"
+                            ],
+                            "properties": {
+                                "imgPath": {
+                                    "type": "string"
+                                },
+                                "postId": {
+                                    "type": "string",
+                                    "length": "24"
+                                }
+                            },
+                            "example": {
+                                "imgPath": "9387656786543.png",
+                                "postId": "64183094ab4b390681e2b2b7"
+                            }
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "For Sucessfull Image Delete...",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "Indicates the status of the operation.",
+                                            "enum": [
+                                                "success"
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "If Any Error Found...",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "description": "Indicates the status of the operation.",
+                                            "enum": [
+                                                "fail"
+                                            ]
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "description": "Error merssage of the error"
+                                        }
+                                    },
+                                    "example": {
+                                        "status": "fail",
+                                        "error": "Invalid UserId"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

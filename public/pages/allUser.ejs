@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Post Application</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+  <style>
+    .posts {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <%- include('./../common/header.ejs') -%>
+
+  <!-- Main Section -->
+  <div class="container card pb-5 pt-2 mt-5" style="max-width: 500px">
+    <h2 class="m-2 text-center">All Users</h2>
+    <% users.forEach((user,i)=>{%>
+    <div class="card my-1 p-1">
+      <p>username: <%=user.username%></p>
+      <p>email: <%=user.email%></p>
+      <% roles = user.role.map(e=>e.name)%>
+      <p>role: <%= roles.join(" , ") %></p>
+      <% if(!roles.includes("admin")){ %>
+      <button class="Admin_btn" onclick="makeAdmin(this,<%=i%>,'<%= user._id%>','<%=userId%>')">Make Admin</button>
+      <% } %>
+    </div>
+    <%})%>
+  </div>
+  <!-- Footer -->
+  <%- include('./../common/footer') -%>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+  <script>
+    function makeAdmin(btn, i, userId, adminId) {
+      btn.disabled = true;
+      fetch("http://localhost:3000/makeAdmin", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId,
+            adminId
+          })
+        })
+        .then(e => e.json())
+        .then(data => {
+          if (data.status == 'fail') {
+            alert(data.error);
+            location.reload()
+          } else {
+            alert("Role Updated...");
+            location.reload()
+          }
+        })
+        .catch(e => {
+          alert(e.message);
+          location.reload()
+        })
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Post Application</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+  <style>
+    .postImgs {
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .postImgs>img {
+      width: 250px;
+      height: 250px;
+    }
+
+    .card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <%- include('./../common/header.ejs') -%>
+
+  <!-- Main Section -->
+  <div class="container mt-5">
+    <h1>All Posts</h1>
+    <hr />
+    <div class="posts">
+      <% if(posts.length==0){ %>
+      <div class="card" style="width: 100%">
+        <h1 class="text-center">No Post Found...</h1>
+      </div>
+      <%}else{%>
+      <% let commentCount = 0%>
+      <%posts.forEach((post,postIdx)=>{%>
+      <div class="card" style="width: 100%">
+        <div class="postImgs">
+          <% post.media.forEach(e=>{ %>
+          <img src="./upload/<%=e%>" alt="post Image" />
+          <%})%>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title"><%= post.title %></h5>
+          <p class="card-text"><%= post.content %></p>
+          <% if(isAdmin){ %>
+          <div>
+            <button onclick="editPost('<%=post.id%>')">Edit Post</button>
+            <button onclick="removePost('<%=post.id%>','<%=userId%>',this)">Delete Post</button>
+          </div>
+          <% } %>
+          <% post.comment=post.comment.filter(e=>!e.isDeleted) %> <%
+            if(post.comment.length==0){ %>
+          <div class="card p-1 mb-2">
+            <h5 class="text-center">No comment Found...</h5>
+          </div>
+          <%}else{%>
+          <% post.comment.forEach((comment,idx)=>{ %>
+          <div class="card p-1 mb-2">
+            <div class="row">
+              <div class="col-md-10">
+                <p>
+                  Username :-
+                  <span class="comment-username">
+                    <%= comment.auther.username%>
+                  </span>
+                </p>
+                <p>
+                  Email :-
+                  <span class="comment-email"><%=comment.auther.email%></span>
+                </p>
+                <p>
+                  Content :-
+                  <span class="comment-content"><%=comment.content%></span>
+                </p>
+              </div>
+              <div class="col-md-2">
+                <% if(userId == comment.auther.id || isAdmin){ %>
+                <div style="display: block">
+                  <button class="editComment" onclick="editComment(<%=commentCount%>,this)">
+                    Edit
+                  </button>
+                  <button class="deleteComment" onclick="deleteComment('<%=post.id%>','<%=userId%>','<%=comment.id%>',this)">
+                    Delete
+                  </button>
+                  <button style="display: none" class="saveComment" onclick="saveComment(<%=postIdx%>,'<%=post.id%>','<%=userId%>','<%=comment.id%>',this)">
+                    Save
+                  </button>
+                  <button style="display: none" class="cencelComment" onclick="cancelComment()">
+                    Cancel
+                  </button>
+                </div>
+                <%}else{%>
+                <div style="display: none">
+                  <button class="editComment" onclick="editComment(<%=commentCount%>,this)">
+                    Edit
+                  </button>
+                  <button class="deleteComment" onclick="deleteComment('<%=post.id%>','<%=userId%>','<%=comment.id%>',this)">
+                    Delete
+                  </button>
+                  <button style="display: none" class="saveComment" onclick="saveComment(<%=postIdx%>,'<%=post.id%>','<%=userId%>','<%=comment.id%>',this)">
+                    Save
+                  </button>
+                  <button style="display: none" class="cencelComment" onclick="cancelComment()">
+                    Cancel
+                  </button>
+                </div>
+                <%}%>
+                </div>
+              </div>
+            </div>
+            <% commentCount++ %>
+                <%})%>
+                <%}%> 
+                <%if(login){%>
+                <div class="card p-1">
+                  <div class="row">
+                    <div class="col-md-10">
+                      <div class="form-group">
+                        <input type="text" class="commentInput" style="width: 100%" placeholder="write your comment..." />
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <input type="button" value="Add Comment" class="addCommentBtn" onclick="addComment(<%=postIdx%>,'<%=post.id%>','<%=userId%>',this)" />
+                    </div>
+                  </div>
+                </div>
+                <%}%>
+          </div>
+        </div>
+        <%})%>
+                <%}%>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <%- include('./../common/footer') -%>
+                <script>
+                  function cancelComment() {
+                    location.reload();
+                  }
+
+                  function editComment(i, editBtn) {
+
+                    const btns = document.getElementsByClassName("editComment");
+
+                    if (document.getElementById("commentInput")) {
+                      alert("you can not change multipal comment in same time...");
+                      return;
+                    }
+
+                    editBtn.style.display = "none";
+
+                    document.getElementsByClassName("deleteComment")[i].style.display =
+                      "none";
+
+                    document.getElementsByClassName("saveComment")[i].style.display =
+                      "block";
+                    document.getElementsByClassName("cencelComment")[i].style.display =
+                      "block";
+
+                    const commentComntentSpan =
+                      document.getElementsByClassName("comment-content")[i];
+
+                    const comment = commentComntentSpan.innerHTML;
+
+                    commentComntentSpan.innerHTML = "";
+
+                    const input = document.createElement("input");
+                    input.id = "commentInput";
+                    input.type = "text";
+                    input.value = comment;
+
+                    commentComntentSpan.appendChild(input);
+                  }
+
+                  function saveComment(i, postId, userId, commentId, btn) {
+                    btn.disabled = true;
+                    document.getElementsByClassName("deleteComment")[i].disabled = true;
+
+                    const content = document.getElementById("commentInput").value;
+
+                    fetch("http://localhost:3000/comment", {
+                        method: "PATCH",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          userId,
+                          content,
+                          postId,
+                          commentId,
+                        }),
+                      })
+                      .then((e) => e.json())
+                      .then((data) => {
+                        if (data.status == "fail") {
+                          alert(data.error);
+                          location.reload();
+                        } else {
+                          alert("Comment Updated...");
+                          location.reload();
+                        }
+                      })
+                      .catch((e) => {
+                        alert(e.message);
+                        location.reload();
+                      });
+                  }
+
+                  function addComment(i, postId, userId, btn) {
+                    btn.disabled = true;
+
+                    const content =
+                      document.getElementsByClassName("commentInput")[i].value;
+
+                    fetch("http://localhost:3000/comment", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          userId,
+                          content,
+                          postId,
+                        }),
+                      })
+                      .then((e) => e.json())
+                      .then((data) => {
+                        if (data.status == "fail") {
+                          alert(data.error);
+                          location.reload();
+                        } else {
+                          alert("Comment Added...");
+                          location.reload();
+                        }
+                      })
+                      .catch((e) => {
+                        alert(e.message);
+                        location.reload();
+                      });
+                  }
+
+                  function deleteComment(postId, userId, commentId, btn) {
+                    btn.disabled = true;
+                    fetch("http://localhost:3000/comment", {
+                        method: "DELETE",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          userId,
+                          postId,
+                          commentId,
+                        }),
+                      })
+                      .then((e) => e.json())
+                      .then((data) => {
+                        if (data.status == "fail") {
+                          alert(data.error);
+                          location.reload();
+                        } else {
+                          alert("Comment Deleted...");
+                          location.reload();
+                        }
+                      })
+                      .catch((e) => {
+                        alert(e.message);
+                        location.reload();
+                      });
+                  }
+
+                  function removePost(postId, userId, btn) {
+                    btn.disabled = true;
+                    fetch("http://localhost:3000/post", {
+                        method: 'DELETE',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                          userId,
+                          postId
+                        })
+                      })
+                      .then(e => e.json())
+                      .then(data => {
+                        if (data.status == 'fail') {
+                          alert(data.error);
+                          location.reload()
+                        } else {
+                          alert("Post Deleted...");
+                          location.reload()
+                        }
+                      })
+                      .catch(e => {
+                        alert(e.message);
+                        location.reload()
+                      })
+                  }
+
+                  function editPost(postId) {
+                    window.location.href = `/editPost/${postId}`
+                  }
+                </script>
+</body>
+
+</html>

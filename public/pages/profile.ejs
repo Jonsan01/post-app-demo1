@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Post Application</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    .posts {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <%- include('./../common/header.ejs') -%>
+
+  <!-- Main Section -->
+  <div class="container card pb-5 pt-2 mt-5" style="max-width: 500px;">
+    <h2 class="m-2 text-center">My Profile</h2>
+
+    <h5>UserName :- <span id="username"><%=username%></span></ h5>
+      <h5>Email :- <span id="email"><%=email%></span></ h5>
+
+        <br>
+        <button onclick="EditProfile(this)" class="mt-4">Edit Profile</button>
+        <button style="display: none;" id="saveBtn" onclick="saveProfile('<%= userId %>')" class="mt-4">Save</button>
+        <button style="display: none;" id="cancelBtn" onclick="cancel(this)">Cancel</button>
+  </div>
+  <!-- Footer -->
+  <%- include('./../common/footer') -%>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+  <script>
+    function EditProfile(btn) {
+      btn.style.display = 'none';
+
+      document.getElementById('saveBtn').style.display = 'block';
+      document.getElementById('cancelBtn').style.display = 'block';
+
+      const userSpan = document.getElementById('username');
+      const emailSpan = document.getElementById('email');
+
+      const username = userSpan.innerHTML;
+      const email = emailSpan.innerHTML;
+
+      userSpan.innerHTML = "";
+      emailSpan.innerHTML = "";
+
+      const usernameInput = document.createElement('input');
+      const emailInput = document.createElement('input');
+
+      usernameInput.id = 'usernameInput';
+      emailInput.id = 'emailInput';
+
+      usernameInput.value = username;
+      emailInput.value = email;
+
+      userSpan.appendChild(usernameInput);
+      emailSpan.appendChild(emailInput);
+
+    }
+
+    function cancel(btn) {
+      btn.disabled = true
+      location.reload()
+    }
+
+    function saveProfile(userId) {
+      const username = document.getElementById('usernameInput').value;
+      const email = document.getElementById('emailInput').value;
+
+      fetch("http://localhost:3000/profile", {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId,
+            username,
+            email
+          })
+        })
+        .then(e => e.json())
+        .then(data => {
+          if (data.status == 'fail') {
+            alert(data.error);
+            location.reload()
+          } else {
+            alert("Profile Updated...");
+            location.reload()
+          }
+        })
+        .catch(e => {
+          alert(e.message);
+          location.reload()
+        })
+    }
+  </script>
+</body>
+
+</html>

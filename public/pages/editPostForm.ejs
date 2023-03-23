@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Post Application</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    .postImgs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .posts {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <%- include('./../common/header.ejs') -%>
+
+  <!-- Main Section -->
+  <div class="container card pb-5 pt-2 mt-5" style="max-width: 500px;">
+    <h2 class="m-2 text-center">Edit Post Form</h2>
+    <form method="post" action="/updatePost" enctype="multipart/form-data">
+      <input type="hidden" name="userId" value="<%=userId%>">
+      <input type="hidden" name="postId" value="<%=post.id%>">
+      <div class="postImgs">
+        <% post.media.forEach(e=>{ %>
+        <div class="postMedia">
+          <img src="/upload/<%=e%>" width="50" height="50" alt="post Image">
+          <br>
+          <input onclick="remove('<%=e%>','<%=post.id%>')" style="width:50px" type="button" value="Remove">
+        </div>
+        <%})%>
+      </div>
+      <div class="form-group">
+        <label for="postTitle">Post Title:</label>
+        <input type="text" class="form-control" id="postTitle" name="postTitle" value="<%=post.title%>" required>
+      </div>
+      <div class="form-group">
+        <label for="postContent">Post Content:</label>
+        <textarea class="form-control" id="postContent" name="postContent" rows="5" required><%=post.content%></textarea>
+      </div>
+      <div class="form-group">
+        <label for="postImages">Upload Images (1-10):</label>
+        <input type="file" class="form-control-file" id="postImages" name="postImages" multiple accept="image/*">
+      </div>
+      <button type="submit" style="width: 100%;" class="btn btn-primary">Submit</button>
+    </form>
+
+  </div>
+  <!-- Footer -->
+  <%- include('./../common/footer') -%>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+  <script>
+    function remove(imgPath,postId) {
+      console.log(imgPath);
+      fetch("http://localhost:3000/postImg", {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            imgPath,
+            postId
+          })
+        })
+        .then(e => e.json())
+        .then(data => {
+          if (data.status == 'fail') {
+            alert(data.error);
+            location.reload()
+          } else {
+            alert("imgage deleted...");
+            location.reload()
+          }
+        })
+        .catch(e => {
+          alert(e.message);
+          location.reload()
+        })
+    }
+  </script>
+</body>
+
+</html>
